@@ -1,0 +1,24 @@
+## [1.0.0] – 2024-05-29
+  
+
+### Added
+- Initial support for running the GeForce NOW script on **non-SteamOS Linux distributions**.
+- Detection of `com.google.Chrome` as Flatpak dependency.
+- Automatic installation logic for `com.google.Chrome` from Flathub.
+- Logging system to capture information, warnings and errors.
+
+### Changed
+- Replaced `steamos-add-to-steam` logic with a fallback that skips Steam integration when running outside of SteamOS.
+- Adjusted controller config path handling to avoid relying on Steam Deck paths.
+- Improved system checks to correctly identify generic Linux environments.
+- Now the script prompts the user to choose between system/user Flatpak installations when necessary.
+
+### Removed
+- Dependencies exclusive to SteamOS or Steam Deck.
+- Hardcoded reliance on Steam-specific paths or executables.
+
+  ---
+
+## Notes
+- This is an **unofficial modification** of a script provided by NVIDIA.
+- The original script was designed solely for SteamOS use and required adaptation to work under other environments.
