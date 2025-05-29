@@ -46,5 +46,7 @@ See the LICENSE file for details.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-user/GeForceNow-App-for-non-SteamOS-distros.git
-   cd GeForceNow-App-for-non-SteamOS-distros/GeForceNOWNonSteamOS_Setup/GeForceNOW_Setup
+   git clone https://github.com/Ziednaga/GeForceNow-App-for-non-SteamOS-distros.git
+   cd GeForceNow-App-for-non-SteamOS-distros/GeForceNOWNonSteamOS_Setup/
+   chmod +x GeForceNOW_Setup
+   ./GeForceNOW_Setup
