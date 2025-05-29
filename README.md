@@ -1,6 +1,10 @@
 # GeForceNow-App-for-non-SteamOS-distros
 This repository contains a small modification in the code of the GeForceNow installation script for SteamOS that now (in theory) allows the installation of the APP on any Linux distribution.
 
+## Notes
+- This is an **unofficial modification** of a script provided by NVIDIA.
+- The original script was designed solely for SteamOS use and required adaptation to work under other environments.
+
 This project includes code licensed under the MIT License by NVIDIA CORPORATION & AFFILIATES.
 See the LICENSE file for details.
 
