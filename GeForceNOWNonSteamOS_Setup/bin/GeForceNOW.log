@@ -1,0 +1,24 @@
+VERSION 0.0.1.1
+ERROR: ld.so: object '/home/kevin/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+ERROR: ld.so: object '/home/kevin/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+Launching GeForceNOW!
+ERROR: ld.so: object '/home/kevin/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+ERROR: ld.so: object '/home/kevin/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+ERROR: ld.so: object '/home/kevin/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+ERROR: ld.so: object '/home/kevin/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+touch: cannot touch '/home/kevin/.var/app/com.google.Chrome/config/google-chrome/WidevineCdm': No such file or directory
+[0529/112841.968533:WARNING:chrome/app/chrome_main_linux.cc:80] Read channel stable from /app/extra/CHROME_VERSION_EXTRA
+ERROR: ld.so: object '/home/kevin/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+[0529/112844.135423:WARNING:chrome/app/chrome_main_linux.cc:80] Read channel stable from /app/extra/CHROME_VERSION_EXTRA
+[2:2:0529/112845.886859:ERROR:dbus/object_proxy.cc:590] Failed to call method: org.kde.KWallet.isEnabled: object_path= /modules/kwalletd6: org.freedesktop.DBus.Error.ServiceUnknown: org.freedesktop.DBus.Error.ServiceUnknown
+[2:2:0529/112845.887031:ERROR:components/os_crypt/sync/kwallet_dbus.cc:117] Error contacting kwalletd6 (isEnabled)
+[2:2:0529/112845.887950:ERROR:dbus/object_proxy.cc:590] Failed to call method: org.kde.KLauncher.start_service_by_desktop_name: object_path= /KLauncher: org.freedesktop.DBus.Error.ServiceUnknown: org.freedesktop.DBus.Error.ServiceUnknown
+[2:2:0529/112845.888050:ERROR:components/os_crypt/sync/kwallet_dbus.cc:86] Error contacting klauncher to start kwalletd6
+[2:2:0529/112845.888877:ERROR:dbus/object_proxy.cc:590] Failed to call method: org.kde.KWallet.close: object_path= /modules/kwalletd6: org.freedesktop.DBus.Error.ServiceUnknown: org.freedesktop.DBus.Error.ServiceUnknown
+[2:2:0529/112845.888983:ERROR:components/os_crypt/sync/kwallet_dbus.cc:412] Error contacting kwalletd6 (close)
+[56:56:0529/112850.957209:ERROR:ui/gl/gl_surface_presentation_helper.cc:260] GetVSyncParametersIfAvailable() failed for 1 times!
+[56:56:0529/112852.096657:ERROR:ui/gl/gl_surface_presentation_helper.cc:260] GetVSyncParametersIfAvailable() failed for 2 times!
+[56:56:0529/112858.657085:ERROR:ui/gl/gl_surface_presentation_helper.cc:260] GetVSyncParametersIfAvailable() failed for 3 times!
+Created TensorFlow Lite XNNPACK delegate for CPU.
+Attempting to use a delegate that only supports static-sized tensors with a graph that has dynamic-sized tensors (tensor#-1 is a dynamic-sized tensor).
+GeForceNOW exited.

@@ -1,0 +1,52 @@
+2025-05-29 10:53:40,058 - INFO - Version - 0.0.1.1
+2025-05-29 10:53:43,329 - ERROR - FATAL ERROR: System compatibility check failed!
+2025-05-29 11:03:10,850 - INFO - Version - 0.0.1.1
+2025-05-29 11:03:13,121 - INFO - Google Chrome not found. Installing...
+2025-05-29 11:03:13,169 - ERROR - Google Chrome installation failed.
+2025-05-29 11:03:13,169 - ERROR - FATAL ERROR: Chrome check failed!
+2025-05-29 11:05:32,157 - INFO - Version - 0.0.1.1
+2025-05-29 11:05:34,327 - ERROR - FATAL ERROR - name 'steam' is not defined
+2025-05-29 11:07:46,309 - INFO - Version - 0.0.1.1
+2025-05-29 11:07:49,403 - ERROR - FATAL ERROR - name 'steam' is not defined
+2025-05-29 11:12:10,613 - INFO - Version - 0.0.1.1
+2025-05-29 11:12:12,749 - ERROR - FATAL ERROR - name 'steam' is not defined
+2025-05-29 11:17:22,506 - INFO - Version - 0.0.1.1
+2025-05-29 11:17:25,208 - INFO - Google Chrome not found. Installing...
+2025-05-29 11:17:25,254 - ERROR - Google Chrome installation failed.
+2025-05-29 11:17:25,254 - ERROR - FATAL ERROR: Chrome check failed!
+2025-05-29 11:21:58,607 - INFO - Version - 0.0.1.1
+2025-05-29 11:22:02,628 - INFO - Google Chrome no encontrado. Instalando desde Flathub…
+2025-05-29 11:22:02,657 - ERROR - Falló la instalación de Google Chrome (exit code 256).
+2025-05-29 11:22:02,657 - ERROR - FATAL ERROR: Chrome check failed!
+2025-05-29 11:22:43,372 - INFO - Version - 0.0.1.1
+2025-05-29 11:22:46,631 - INFO - Google Chrome no encontrado. Instalando desde Flathub…
+2025-05-29 11:22:46,664 - ERROR - Falló la instalación de Google Chrome (exit code 256).
+2025-05-29 11:22:46,664 - ERROR - FATAL ERROR: Chrome check failed!
+2025-05-29 11:23:07,064 - INFO - Version - 0.0.1.1
+2025-05-29 11:23:10,895 - INFO - Google Chrome no encontrado. Instalando desde Flathub…
+2025-05-29 11:25:41,980 - INFO - Version - 0.0.1.1
+2025-05-29 11:25:45,386 - INFO - Google Chrome no encontrado. Instalando en user via Flatpak…
+2025-05-29 11:26:02,144 - INFO - Google Chrome instalado correctamente.
+2025-05-29 11:26:02,145 - INFO - START - add_app_to_steam
+2025-05-29 11:26:02,145 - INFO - START - uninstall_app
+2025-05-29 11:26:02,156 - INFO - END - uninstall_app
+2025-05-29 11:26:02,156 - INFO - START - set_gamepad_layout
+2025-05-29 11:26:02,156 - INFO - Processing  : /home/kevin/.local/share/Steam/steamapps/common/Steam Controller Configs/0/config/configset_controller_neptune.vdf
+2025-05-29 11:26:02,157 - INFO - Skipping setting up GamePad Layout, config dir not found : /home/kevin/.local/share/Steam/steamapps/common/Steam Controller Configs/0/config
+2025-05-29 11:26:02,157 - INFO - Processing  : /home/kevin/.local/share/Steam/steamapps/common/Steam Controller Configs/1836239149/config/configset_controller_neptune.vdf
+2025-05-29 11:26:02,157 - INFO - Skipping setting up GamePad Layout, config dir not found : /home/kevin/.local/share/Steam/steamapps/common/Steam Controller Configs/1836239149/config
+2025-05-29 11:26:02,157 - INFO - Processing  : /home/kevin/.local/share/Steam/steamapps/common/Steam Controller Configs/1075367764/config/configset_controller_neptune.vdf
+2025-05-29 11:26:02,158 - INFO - END - set_gamepad_layout
+2025-05-29 11:26:02,159 - INFO - Modify Time - {'/home/kevin/.local/share/Steam/userdata/0/config': 1744512827.2267337, '/home/kevin/.local/share/Steam/userdata/1836239149/config': 1744149381.7529461, '/home/kevin/.local/share/Steam/userdata/1075367764/config/shortcuts.vdf': 1747272450.8492198}
+2025-05-29 11:26:02,159 - INFO - cmd = steamos-add-to-steam -ui "/home/kevin/Descargas/GeForceNOW_Setup/bin/NVIDIA GeForce NOW" > /dev/null 2>&1 &
+2025-05-29 11:27:00,203 - INFO - START - update_app_assets
+2025-05-29 11:27:02,218 - INFO - START - update_library_icon
+2025-05-29 11:27:02,241 - INFO - END - update_library_icon
+2025-05-29 11:27:02,245 - INFO - Updating assets for AppID - 3553378964
+2025-05-29 11:27:02,258 - INFO - START - restart_steam
+2025-05-29 11:27:12,398 - INFO - Launch Steam again
+2025-05-29 11:27:12,401 - INFO - Modify Time - {'/home/kevin/.local/share/Steam/userdata/0/config': 1744512827.2267337, '/home/kevin/.local/share/Steam/userdata/1836239149/config': 1744149381.7529461, '/home/kevin/.local/share/Steam/userdata/1075367764/config': 1748528823.1056886}
+2025-05-29 11:27:27,416 - INFO - User logged in Steam
+2025-05-29 11:27:27,418 - INFO - END - restart_steam
+2025-05-29 11:27:27,418 - INFO - END - update_app_assets
+2025-05-29 11:27:27,419 - INFO - END - add_app_to_steam

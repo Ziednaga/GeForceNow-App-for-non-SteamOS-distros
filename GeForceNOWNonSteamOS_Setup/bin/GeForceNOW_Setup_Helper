@@ -1,0 +1,476 @@
+#!/usr/bin/env python
+
+"""
+SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+SPDX-License-Identifier: MIT
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+Trademark Addendum to the License for Use of NVIDIA Software
+
+This trademark addendum to the license (“License”) is a legal agreement between
+you, whether an individual or entity, (“you”) and NVIDIA Corporation (“NVIDIA”)
+and governs the use of the NVIDIA logos and icons provided (“Trademarks”).
+Subject to the terms of this Addendum and the License,
+NVIDIA grants you a non-exclusive, non-transferable, limited license to use the
+Trademarks with the NVIDIA software and in accordance with NVIDIA’s trademark
+guidelines (Logos & Brand Guidelines | NVIDIA - 
+https://www.nvidia.com/en-us/about-nvidia/legal-info/logo-brand-usage/). 
+You will not: (a) materially modify or alter the Trademarks in any way;
+(b) use the Trademarks in such proximity to any of your own trademarks or
+third party trademarks so as to create a combination or
+composite mark; (c) or display the Trademarks in any way that implies that
+other goods or services are provided by NVIDIA or with NVIDIA’s supervision.
+NVIDIA retains all right, title, and interest in and to the Trademarks and
+that use shall inure to the benefit of NVIDIA.
+NVIDIA may terminate the license granted above immediately upon a material breach
+of the terms of this Addendum or the License.
+THE TRADEMARKS ARE LICENSED “AS IS” AND NVIDIA DISCLAIMS ALL WARRANTIES AND
+REPRESENTATIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING,
+WITHOUT LIMITATION, THE WARRANTIES OF TITLE, NONINFRINGEMENT, MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, USAGE OF TRADE AND COURSE OF DEALING.
+"""
+
+import os
+import sys
+import platform
+import stat
+import re
+import shutil
+import logging
+import time
+import subprocess
+import shutil
+
+##########################################################################################
+# App Name and Version
+##########################################################################################
+
+VERSION = '0.0.1.1'
+APP_NAME = 'NVIDIA GeForce NOW'
+
+##########################################################################################
+# Message Displayed to User
+##########################################################################################
+
+MSG_UNSUPPORTED = 'FATAL ERROR: Unsupported system!'
+MSG_GENERIC_ERROR = 'There was a problem setting up NVIDIA GeForce NOW on your Steam Deck.'
+MSG_CHROME_NOT_FOUND = 'FATAL ERROR: Google Chrome not found!'
+MSG_ADD_LIB_FAILED = 'FATAL ERROR: Add to Steam Library failed!'
+MSG_CHROME_INSTALL = 'Google Chrome not found. Do you want to install?'
+MSG_SETUP_COMPLETE_CONSOLE = 'NVIDIA GeForce NOW setup finished!'
+MSG_SETUP_COMPLETE = """NVIDIA GeForce NOW is set up and ready to go! To start playing:
+
+    1. Return to Gaming Mode
+    2. Navigate to \'Non-Steam\' games in Steam library
+    3. Launch GeForce NOW
+"""
+MSG_USR_CONSENT = """This script sets up NVIDIA GeForce NOW on your Steam Deck by:
+
+◦ Installing Google Chrome (browser supporting GeForce NOW), if it\'s not already installed
+◦ Adjusting Google Chrome\'s Flatpak settings to allow for gamepad use
+◦ Adding a GeForce NOW shortcut to Steam
+
+Trademark Addendum to the License for Use of NVIDIA Software
+
+This trademark addendum to the license ("License") is a legal agreement between you, whether an individual or entity, ("you") and NVIDIA Corporation ("NVIDIA") and governs the use of the NVIDIA logos and icons provided ("Trademarks"). Subject to the terms of this Addendum and the License, NVIDIA grants you a non-exclusive, non-transferable, limited license to use the Trademarks with the NVIDIA software and in accordance with NVIDIA's trademark guidelines (Logos & Brand Guidelines | NVIDIA - https://www.nvidia.com/en-us/about-nvidia/legal-info/logo-brand-usage/). You will not: (a) materially modify or alter the Trademarks in any way; (b) use the Trademarks in such proximity to any of your own trademarks or third party trademarks so as to create a combination or composite mark; (c) or display the Trademarks in any way that implies that other goods or services are provided by NVIDIA or with NVIDIA's supervision. NVIDIA retains all right, title, and interest in and to the Trademarks and that use shall inure to the benefit of NVIDIA. NVIDIA may terminate the license granted above immediately upon a material breach of the terms of this Addendum or the License. THE TRADEMARKS ARE LICENSED "AS IS" AND NVIDIA DISCLAIMS ALL WARRANTIES AND REPRESENTATIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE WARRANTIES OF TITLE, NONINFRINGEMENT, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, USAGE OF TRADE AND COURSE OF DEALING. By clicking yes, you agree to the terms of this Addendum
+
+Do you wish to continue?
+"""
+
+##########################################################################################
+# Config Section
+##########################################################################################
+
+LOG_FILE = 'GeForceNOW_Setup.log'
+log_format = '%(asctime)s - %(levelname)s - %(message)s'
+try:
+    logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format=log_format)
+    logging.info(f'Version - {VERSION}')
+except Exception as e:
+    logging.error(f'Log config failed. {str(e)}')
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+EXE = os.path.join(SCRIPT_DIR, APP_NAME)
+ICON_DIR = os.path.join(SCRIPT_DIR, 'assets')
+USERS_DATA_DIR = os.path.join(os.getenv('HOME'), '.local/share/Steam/userdata')
+CONTROLLER_CONFIG_DIR = os.path.join(
+    os.getenv('HOME'), '.local/share/Steam/steamapps/common/Steam Controller Configs')
+STEAM_CMD = 'steamos-add-to-steam'
+
+GAMEPAD_LAYOUT_FILE_CONTENT = '''"controller_config"
+{
+	"nvidia geforce now"
+	{
+		"template"		"controller_neptune_gamepad+mouse.vdf"
+	}
+}
+'''
+ADDITIONAL_GAMEPAD_LAYOUT_FILE_CONTENT = '''	"nvidia geforce now"
+	{
+		"template"		"controller_neptune_gamepad+mouse.vdf"
+	}
+}
+'''
+
+##########################################################################################
+# Script
+##########################################################################################
+
+
+def yesno_kdialog(msg=MSG_CHROME_INSTALL):
+    try:
+        result = subprocess.run(['kdialog', '--title', APP_NAME, '--yesno',
+                                msg], capture_output=True, text=True, check=True)
+        if result.returncode == 0:
+            return True
+    except Exception as e:
+        logging.error(f'Kdialog failed. {str(e)}')
+    return False
+
+#Changes for running on non-SteamOS distros:
+#Forces to install Google Chrome in usermode on Flatpak, if Flathub it's not installed will be installed.
+
+def find_chrome():
+    check_cmd = 'flatpak run --command=chrome com.google.Chrome --version >/dev/null 2>&1'
+    if os.system(check_cmd) == 0:
+        logging.info('Google Chrome its already installed.')
+        return True
+
+    os.system(
+        'flatpak --user remote-add --if-not-exists flathub '
+        'https://flathub.org/repo/flathub.flatpakrepo'
+    )
+
+    logging.info('Google Chrome not founded, installing via Flathub…')
+    print('Installing Google Chrome vía Flatpak (user)…')
+    install_code = os.system('flatpak install --user -y flathub com.google.Chrome')
+    if install_code != 0:
+        logging.error(f'Google Chrome installation failed (exit code {install_code}).')
+        return False
+
+    if os.system(check_cmd) == 0:
+        logging.info('Google Chrome installation complete.')
+        return True
+    else:
+        logging.error('Google Chrome installed, but cant run properly.')
+        return False
+
+#System compatibility is not more restricted for only SteamOS, so now the Script can run on any distro.
+
+def sys_compatibility_check():
+    return shutil.which(STEAM_CMD) is not None and os.path.exists(USERS_DATA_DIR) and os.path.exists(CONTROLLER_CONFIG_DIR) and platform.system().lower() == 'linux'
+
+#Changes for running on non-SteamOS distros^
+
+def get_users():
+    return [item for item in os.listdir(USERS_DATA_DIR) if os.path.isdir(os.path.join(USERS_DATA_DIR, item))]
+
+
+def add_exec_permission(file_path):
+    try:
+        st = os.stat(file_path)
+        os.chmod(file_path, st.st_mode | stat.S_IEXEC)
+    except Exception as e:
+        logging.error(f'Add executable permission failed. {str(e)}')
+
+
+def get_file_mod_time(file_path):
+    try:
+        return os.path.getmtime(file_path)
+    except FileNotFoundError:
+        logging.error(f'File mod tine not found - {file_path}')
+    return None
+
+
+class Login_watcher:
+    def __init__(self, trackShortcut = True, maxWait = 3600):
+        self.shortcut_files = {}
+        self.file_mod_times = {}
+        self.users = get_users()
+        self.maxWait = maxWait
+
+        for user in self.users:
+            dir = os.path.join(USERS_DATA_DIR, user, 'config')
+            file = os.path.join(dir, 'shortcuts.vdf')
+            if trackShortcut and os.path.exists(file):
+                self.shortcut_files[file] = user
+            elif os.path.exists(dir):
+                self.shortcut_files[dir] = user
+
+        self.file_mod_times = {file_path: get_file_mod_time(
+            file_path) for file_path in self.shortcut_files.keys()}
+
+        logging.info(f'Modify Time - {self.file_mod_times}' )
+    def watch(self):
+        count = 0
+        while True:
+            for file_path in self.shortcut_files.keys():
+                current_mod_time = get_file_mod_time(file_path)
+                if current_mod_time is not None and current_mod_time != self.file_mod_times[file_path]:
+                    self.file_mod_times[file_path] = current_mod_time
+                    return self.shortcut_files[file_path]
+            # Check for new user login
+            new_users_list = get_users()
+            if len(new_users_list) != len(self.users):
+                return list(set(new_users_list) - set(self.users))[0]
+
+            count += 1
+            if count > self.maxWait:
+                return ''
+
+            time.sleep(1)
+
+
+def uninstall_app():
+    logging.info('START - uninstall_app')
+
+    for user in get_users():
+        app_id = get_app_id(user)
+        if app_id:
+            os.system(f'xdg-open steam://uninstall/{app_id}')
+            #Remove assets
+            assets = [
+                os.path.join(USERS_DATA_DIR, user, 'config',
+                             'grid', f'{app_id}_hero.png'),
+                os.path.join(USERS_DATA_DIR, user, 'config',
+                             'grid', f'{app_id}p.png'),
+                os.path.join(USERS_DATA_DIR, user, 'config',
+                             'grid', f'{app_id}.png')
+            ]
+            try:
+                for item in assets:
+                    if os.path.exists(item):
+                        os.remove(item)
+            except Exception as e:
+                logging.error(f'Failed to remove file : {str(e)}')
+
+    logging.info('END - uninstall_app')
+
+
+def add_app_to_steam():
+    logging.info('START - add_app_to_steam')
+    print('Adding to Steam\n')
+    # Uninstall App
+    uninstall_app()
+
+    # Set gamepad layout for all users
+    set_gamepad_layout()
+
+    # Init login watcher
+    login_watcher = Login_watcher()
+
+    # Add App to Steam
+    cmd = f'{STEAM_CMD} -ui "{EXE}" > /dev/null 2>&1 &'
+    logging.info(f'cmd = {cmd}')
+    if os.system(cmd):
+        logging.error('Add to Steam failed.')
+        return False
+
+    # Watch for user login
+    assets_changed_for_user = login_watcher.watch()
+
+    # Update Assets
+    update_app_assets(assets_changed_for_user)
+
+    logging.info('END - add_app_to_steam')
+
+    return True
+
+
+def set_gamepad_layout():
+    logging.info('START - set_gamepad_layout')
+
+    for user in get_users():
+        string_to_insert = ADDITIONAL_GAMEPAD_LAYOUT_FILE_CONTENT
+        dir = os.path.join(CONTROLLER_CONFIG_DIR, user, 'config')
+        file = os.path.join(dir, 'configset_controller_neptune.vdf')
+        try:
+            logging.info(f'Processing  : {file}')
+            if not os.path.exists(dir):
+                logging.info(
+                    f'Skipping setting up GamePad Layout, config dir not found : {dir}')
+                continue
+            elif not os.path.exists(file):
+                with open(file, 'w') as fp:
+                    fp.write(GAMEPAD_LAYOUT_FILE_CONTENT)
+            else:
+                with open(file, 'r+') as fp:
+                    content = fp.read()
+                    if APP_NAME.lower() in content:
+                        logging.info(f'{APP_NAME} shortcut found in : {file}')
+                    else:
+                        position_to_insert = content.rfind('}')
+                        fp.seek(position_to_insert)
+                        fp.write(string_to_insert)
+        except Exception as e:
+            logging.error(f'Failed to GamePad Layout : {str(e)}')
+
+    logging.info('END - set_gamepad_layout')
+
+
+def get_app_id(user):
+    app_id = 0
+    file = os.path.join(USERS_DATA_DIR, user, 'config', 'shortcuts.vdf')
+    if os.path.exists(file):
+        try:
+            with open(file, 'r', encoding='iso-8859-1') as fp:
+                content = fp.read()
+                words = re.split('\x00|\x01|\x02', content)
+                for i in range(len(words) - 2):
+                    if words[i] == 'AppName' and words[i + 1] == 'NVIDIA GeForce NOW':
+                        target_word = words[i - 1]
+                        hex_string = ''.join(['{:02x}'.format(ord(item))
+                                              for item in target_word[::-1]])
+                        if (hex_string):
+                            app_id = int(hex_string, 16)
+        except Exception as e:
+            logging.error(f'get_app_id failed for {file} - ERROR: {str(e)}')
+    return app_id
+
+
+def update_library_icon(user):
+    logging.info('START - update_library_icon')
+
+    file = os.path.join(USERS_DATA_DIR, user, 'config', 'shortcuts.vdf')
+    if os.path.exists(file):
+        try:
+            with open(file, 'r+', encoding='iso-8859-1') as fp:
+                icon_file = os.path.join(ICON_DIR, 'GFN-Logo.png')
+                content = fp.read()
+                pos1 = content.find(APP_NAME)
+                pos2 = content.find("icon", pos1)
+                if pos2 > 0:
+                    position_to_insert = pos2 + 5
+                    fp.seek(position_to_insert)
+                    fp.write(icon_file)
+                    fp.write(content[position_to_insert:])
+                else:
+                    logging.error(f'App shortcut not found!')
+        except Exception as e:
+            logging.error(f'Library Icon not updated. {str(e)}')
+    logging.info('END - update_library_icon')
+
+
+
+def restart_steam():
+    logging.info('START - restart_steam')
+
+    if not os.system('steam -shutdown > /dev/null 2>&1'):
+        time.sleep(10)
+        logging.info('Launch Steam again')
+        login_watcher = Login_watcher(False, 15)
+        os.system('nohup steam > /dev/null 2>&1 &')
+        login_watcher.watch()
+        logging.info('User logged in Steam')
+    else:
+        logging.error(f'Steam Shutdown failed')
+
+    logging.info('END - restart_steam')
+
+
+def update_app_assets(user):
+    logging.info('START - update_app_assets')
+
+    time.sleep(2)
+    update_library_icon(user)
+
+    app_id = get_app_id(user)
+    if app_id:
+        logging.info(f'Updating assets for AppID - {app_id}')
+
+        dst_dir = os.path.join(USERS_DATA_DIR, user, 'config', 'grid')
+        if not os.path.exists(dst_dir):
+            logging.info(f'App assets dir - {dst_dir} not found.')
+            try:
+                os.mkdir(dst_dir)
+            except Exception as e:
+                logging.error(f'mkdir failed for - {dst_dir}, ERROR: {str(e)}')
+                logging.error(f'App assets not updated.')
+                return
+
+        src = os.path.join(ICON_DIR, 'GFN-Hero.png')
+        dst = os.path.join(dst_dir, f'{app_id}_hero.png')
+        try:
+            shutil.copyfile(src, dst)
+        except Exception as e:
+            logging.error(f'App assets not updated. {str(e)}')
+
+        src = os.path.join(ICON_DIR, 'GFN-Tile.png')
+        dst = os.path.join(dst_dir, f'{app_id}p.png')
+        try:
+            shutil.copyfile(src, dst)
+        except Exception as e:
+            logging.error(f'App assets not updated. {str(e)}')
+
+        src = os.path.join(ICON_DIR, 'GFN-Recent-Tile.png')
+        dst = os.path.join(dst_dir, f'{app_id}.png')
+        try:
+            shutil.copyfile(src, dst)
+        except Exception as e:
+            logging.error(f'App assets not updated. {str(e)}')
+
+        src = os.path.join(ICON_DIR, 'GFN-Hero-logo.png')
+        dst = os.path.join(dst_dir, f'{app_id}_logo.png')
+        try:
+            shutil.copyfile(src, dst)
+        except Exception as e:
+            logging.error(f'App assets not updated. {str(e)}')
+    else:
+        logging.error(f'AppID - {app_id} not found.')
+    print('Restarting Steam\n')
+    restart_steam()
+
+    logging.info('END - update_app_assets')
+
+if __name__ == "__main__":
+    print('***************************')
+    print('Running GeForceNOW Setup...')
+    r_code = 0
+    try:
+        if not (yesno_kdialog(MSG_USR_CONSENT)):
+            logging.info('No consent, exiting.')
+            sys.exit(0)
+
+        add_exec_permission(EXE)
+        if not sys_compatibility_check():
+            r_code = 1
+            logging.error('FATAL ERROR: System compatibility check failed!')
+            os.system(
+                f'kdialog --title "{APP_NAME}" --error "{MSG_GENERIC_ERROR}"')
+        elif not find_chrome():
+            r_code = 1
+            logging.error('FATAL ERROR: Chrome check failed!')
+            os.system(
+                f'kdialog --title "{APP_NAME}" --error "{MSG_GENERIC_ERROR}"')
+        elif not add_app_to_steam():
+            r_code = 1
+            logging.error('FATAL ERROR: Add App to Steam failed!')
+            os.system(
+                f'kdialog --title "{APP_NAME}" --error "{MSG_GENERIC_ERROR}"')
+        else:
+            time.sleep(5)
+            print(f'{MSG_SETUP_COMPLETE_CONSOLE}')
+            os.system(
+                f'kdialog --title "{APP_NAME}" --msgbox "{MSG_SETUP_COMPLETE}"')
+    except Exception as e:
+        r_code = 1
+        logging.error(f'FATAL ERROR - {str(e)}')
+
+    sys.exit(r_code)

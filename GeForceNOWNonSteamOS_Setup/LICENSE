@@ -1,0 +1,25 @@
+SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+SPDX-License-Identifier: MIT
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+
+Trademark Addendum to the License for Use of NVIDIA Software
+
+This trademark addendum to the license (“License”) is a legal agreement between you, whether an individual or entity, (“you”) and NVIDIA Corporation (“NVIDIA”) and governs the use of the NVIDIA logos and icons provided (“Trademarks”). Subject to the terms of this Addendum and the License, NVIDIA grants you a non-exclusive, non-transferable, limited license to use the Trademarks with the NVIDIA software and in accordance with NVIDIA’s trademark guidelines (Logos & Brand Guidelines | NVIDIA - https://www.nvidia.com/en-us/about-nvidia/legal-info/logo-brand-usage/). You will not: (a) materially modify or alter the Trademarks in any way; (b) use the Trademarks in such proximity to any of your own trademarks or third party trademarks so as to create a combination or composite mark; (c) or display the Trademarks in any way that implies that other goods or services are provided by NVIDIA or with NVIDIA’s supervision. NVIDIA retains all right, title, and interest in and to the Trademarks and that use shall inure to the benefit of NVIDIA. NVIDIA may terminate the license granted above immediately upon a material breach of the terms of this Addendum or the License. THE TRADEMARKS ARE LICENSED “AS IS” AND NVIDIA DISCLAIMS ALL WARRANTIES AND REPRESENTATIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE WARRANTIES OF TITLE, NONINFRINGEMENT, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, USAGE OF TRADE AND COURSE OF DEALING.
